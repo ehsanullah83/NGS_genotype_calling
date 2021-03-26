@@ -6,7 +6,37 @@
 		"mem" : "8g",
 		"output"  : "00log/{rule}_{wildcards}.out",
 		"error" : "00log/{rule}_{wildcards}.err",
-		"extra" : ""
+		"extra" : "--gres=lscratch:50"
+	},
+	"deepvariantS1" :
+	{
+		"partition" : "norm,quick",
+		"extra" : "--gres=lscratch:200",
+		"time" : "4:00:00",
+		"threads" : "56",
+		"mem" : "56g"
+	},
+	"deepvariantS2" :
+	{
+		"partition" : "gpu",
+		"extra" : "--constraint='gpup100' --gres=lscratch:100,gpu:1",
+		"time" : "2:00:00",
+		"mem" : "8g"
+	},
+	"deepvariantS3" :
+	{
+		"partition" : "norm,quick",
+		"extra" : "--gres=lscratch:100",
+		"time" : "2:30:00",
+		"mem" : "32g"
+	},
+	"dv_whatshap" :
+	{
+		"partition" : "norm,quick",
+		"extra" : "--gres=lscratch:200",
+		"time" : "2:00:00",
+		"threads" : "26",
+		"mem" : "64g"
 	},
 	"sve" :
 	{
@@ -15,6 +45,12 @@
 		"time" : "8:00:00",
 		"threads" : "16",
 		"mem" : "64g"
+	},
+	"split_bam_by_chr" :
+	{
+		"extra" : "--gres=lscratch:100",
+		"mem" : "16g",
+		"threads" : "4"
 	},
 	"split_cram_by_rg" :
 	{
@@ -33,20 +69,60 @@
 	{
 		"partition" : "quick",
 		"time" : "2:00:00",
-		"mem" : "96g",
-		"threads" : "32"
+		"mem" : "32g",
+		"threads" : "32",
+		"extra" : "--gres=lscratch:100"
+	},
+	"merge_deepvariantVcf" :
+	{
+		"mem" : "64g",
+		"threads" : "16"
 	},
 	"merge_freebayes" :
 	{
 		"mem" : "64g",
-		"threads" : "8"
+		"threads" : "16"
+	},
+	"merge_dv_fb_vcfs":
+	{
+		"mem" : "32g",
+		"extra" : "--gres=lscratch:100"
+	},
+	"align_markdup" :
+	{
+		"partition" : "norm,quick",
+		"time" : "4:00:00",
+		"mem" : "100g",
+		"threads" : "56",
+		"extra" : "--gres=lscratch:400"
+	},
+	"realign" :
+	{
+		"partition" : "norm",
+		"time" : "6:00:00",
+		"mem" : "200g",
+		"extra" : "--gres=lscratch:200"
 	},
 	"align" :
 	{
-		"partition" : "norm",
-		"time" : "48:00:00",
-		"mem" : "64g",
-		"threads" : "32"
+		"partition" : "norm,quick",
+		"time" : "4:00:00",
+		"mem" : "100g",
+		"threads" : "56",
+		"extra" : "--gres=lscratch:400"
+	},
+	"manta" :
+	{
+		"partition" : "norm,quick",
+		"time" : "2:00:00",
+		"mem" : "32g",
+		"threads" : "32",
+		"extra" : "--gres=lscratch:50"
+	},
+	"scramble" :
+	{
+		"partition" : "norm,quick",
+		"time" : "4:00:00"
 	},
 	"picard_merge_bams" :
 	{
@@ -56,11 +132,11 @@
 	},
 	"merge_lane_bam" :
 	{
-		"partition" : "norm",
-		"time" : "24:00:00",
-		"mem" : "32G",
+		"partition" : "norm,quick",
+		"time" : "4:00:00",
+		"mem" : "16G",
 		"threads": "16",
-		"extra" : "--gres=lscratch:300"
+		"extra" : "--gres=lscratch:200"
 	},
 	"merge_RG_bams_back_together" :
 	{
@@ -86,7 +162,8 @@
 	{
 		"partition" : "norm",
 		"time" : "6:00:00",
-		"mem" : "16g"
+		"mem" : "32g",
+		"extra" : "--gres=lscratch:20"
 	},
 	"picard_merge_gvcfs" : {
 		"mem" : "16g"

@@ -592,8 +592,8 @@ rule clair3:
 		gvcftbi = 'clair3/gvcf/{sample}.clr3.gvcf.gz.tbi',
 		phasedvcf = 'clair3/vcf/{sample}.clr3.phased.vcf.gz',
 		phasedtbi = 'clair3/vcf/{sample}.clr3.phased.vcf.gz.tbi',
-		#filteredvcf = 'clair3/vcf/{sample}.clr3.filtered.vcf.gz',
-		#filteredtbi = 'clair3/vcf/{sample}.clr3.filtered.vcf.gz.tbi',
+		filteredvcf = 'clair3/vcf/{sample}.clr3.filtered.vcf.gz',
+		filteredtbi = 'clair3/vcf/{sample}.clr3.filtered.vcf.gz.tbi'
 	threads: 56
 	shell:
 		"""
@@ -610,31 +610,31 @@ rule clair3:
 		cp $LWORK_DIR/merge_output.gvcf.gz.tbi {output.gvcftbi}
 		cp $LWORK_DIR/phased_merge_output.vcf.gz {output.phasedvcf}
 		cp $LWORK_DIR/phased_merge_output.vcf.gz.tbi {output.phasedtbi}
+		bcftools norm --threads $(({threads}-2)) --multiallelics -any --output-type u {input.phasedvcf} \
+			| bcftools norm --threads $(({threads}-2)) -d exact --check-ref s --fasta-ref {config[ref_genome]} --output-type u - \
+			| bcftools filter --threads $(({threads}-2)) --write-index=tbi --include 'QUAL>10 & FORMAT/AD[0:1]>3' --output-type z --output {output.filteredvcf}
 		echo "lscratch use after clair3:"
 		du -sh $LWORK_DIR
 		#bcftools view ORF15 + PEAD, then bcftools concat
 		"""
-# bcftools norm --threads $(({threads}-2)) --multiallelics -any --output-type u {output.phasedvcf} \
-# 	| bcftools norm --threads $(({threads}-2)) -d exact --check-ref s --fasta-ref {config[ref_genome]} --output-type u - \
-# 	| bcftools filter --threads $(({threads}-2)) --write-index=tbi --include 'filter=="PASS" & FORMAT/AD[0:1]>2' --output-type z --output {output.filteredvcf}
 
-localrules: clair3_hf
-rule clair3_hf:
-	input:
-		phasedvcf = 'clair3/vcf/{sample}.clr3.phased.vcf.gz',
-		phasedtbi = 'clair3/vcf/{sample}.clr3.phased.vcf.gz.tbi'
-	output:
-		filteredvcf = 'clair3/vcf/{sample}.clr3.filtered.vcf.gz',
-		filteredtbi = 'clair3/vcf/{sample}.clr3.filtered.vcf.gz.tbi',
-	threads: 8
-	shell:
-		"""
-		module load {config[samtools_version]}
-		bcftools norm --threads $(({threads}-2)) --multiallelics -any --output-type u {input.phasedvcf} \
-			| bcftools norm --threads $(({threads}-2)) -d exact --check-ref s --fasta-ref {config[ref_genome]} --output-type u - \
-			| bcftools filter --threads $(({threads}-2)) --write-index=tbi --include 'filter=="PASS" & FORMAT/AD[0:1]>2' --output-type z --output {output.filteredvcf}
-		#bcftools view ORF15 + PEAD, then bcftools concat
-		"""
+# localrules: clair3_hf
+# rule clair3_hf:
+# 	input:
+# 		phasedvcf = 'clair3/vcf/{sample}.clr3.phased.vcf.gz',
+# 		phasedtbi = 'clair3/vcf/{sample}.clr3.phased.vcf.gz.tbi'
+# 	output:
+# 		filteredvcf = 'clair3/vcf/{sample}.clr3.filtered.vcf.gz',
+# 		filteredtbi = 'clair3/vcf/{sample}.clr3.filtered.vcf.gz.tbi',
+# 	threads: 8
+# 	shell:
+# 		"""
+# 		module load {config[samtools_version]}
+# 		bcftools norm --threads $(({threads}-2)) --multiallelics -any --output-type u {input.phasedvcf} \
+# 			| bcftools norm --threads $(({threads}-2)) -d exact --check-ref s --fasta-ref {config[ref_genome]} --output-type u - \
+# 			| bcftools filter --threads $(({threads}-2)) --write-index=tbi --include 'filter=="PASS" & FORMAT/AD[0:1]>2' --output-type z --output {output.filteredvcf}
+# 		#bcftools view ORF15 + PEAD, then bcftools concat
+# 		"""
 
 rule glnexus_clair3:
 	input:
